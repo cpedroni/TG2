@@ -1,0 +1,253 @@
+[
+    {
+        "id": "e0c9fb1db34d5133",
+        "type": "inject",
+        "z": "d30b16ca0e9bbdce",
+        "name": "Customer",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "Axelor",
+        "payloadType": "str",
+        "x": 120,
+        "y": 80,
+        "wires": [
+            [
+                "c22c1e36a3041052"
+            ]
+        ]
+    },
+    {
+        "id": "d8ddb31d256df18c",
+        "type": "ui_button",
+        "z": "d30b16ca0e9bbdce",
+        "name": "",
+        "group": "0a2d9090a0b374e5",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "send edits",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 330,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "670b792104ab7f17",
+        "type": "ui_etable",
+        "z": "d30b16ca0e9bbdce",
+        "payload": "[{\"title\":\"Name\",\"field\":\"name\",\"width\":\"10%\",\"editor\":false},{\"title\":\"Date of order\",\"field\":\"date_order\",\"width\":\"20%\",\"editor\":true},{\"title\":\"Total amount\",\"field\":\"amount_total\",\"width\":\"20%\",\"editor\":true},{\"title\":\"State\",\"field\":\"state\",\"width\":\"20%\",\"editor\":\"select\",\"editorParams\":{\"values\":[\"DRAF\",\"SENT\",\"CANCELLED\"]}}]",
+        "payloadType": "json",
+        "options": "{\"movableColumns\":true,\"resizableColumns\":true,\"autoResize\":true,\"layout\":\"fitColumns\",\"pagination\":\"local\",\"height\":\"400px\",\"groupStartOpen\":true}",
+        "group": "26169ec9908443d7",
+        "name": "etable",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "columns": [],
+        "outputs": 1,
+        "cts": false,
+        "x": 110,
+        "y": 240,
+        "wires": [
+            [
+                "d8ddb31d256df18c"
+            ]
+        ]
+    },
+    {
+        "id": "1d9e3f9ac7e008f1",
+        "type": "ui_button",
+        "z": "d30b16ca0e9bbdce",
+        "name": "",
+        "group": "0a2d9090a0b374e5",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "display draft",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "14",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "4045f08a419599a8"
+            ]
+        ]
+    },
+    {
+        "id": "4045f08a419599a8",
+        "type": "change",
+        "z": "d30b16ca0e9bbdce",
+        "name": "Search Orders condition",
+        "rules": [
+            {
+                "t": "set",
+                "p": "filters",
+                "pt": "msg",
+                "to": "[\t   [\t       ['partner_id', '=', msg.payload],\t       ['state', '=', 'draft']\t   ],\t   ['name', 'state', 'date_order', 'create_date', 'amount_total' ]\t]",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 410,
+        "y": 160,
+        "wires": [
+            [
+                "e47d2aac2a6336aa"
+            ]
+        ]
+    },
+    {
+        "id": "e47d2aac2a6336aa",
+        "type": "odoo-xmlrpc-search-read",
+        "z": "d30b16ca0e9bbdce",
+        "name": "",
+        "host": "eff09f3d6f4be3f8",
+        "model": "sale.order",
+        "filter": "",
+        "offset": 0,
+        "limit": 100,
+        "x": 690,
+        "y": 160,
+        "wires": [
+            [
+                "670b792104ab7f17"
+            ]
+        ]
+    },
+    {
+        "id": "c22c1e36a3041052",
+        "type": "change",
+        "z": "d30b16ca0e9bbdce",
+        "name": "Search customers condition",
+        "rules": [
+            {
+                "t": "set",
+                "p": "filters",
+                "pt": "msg",
+                "to": "[\t   [\t       ['name', '=', msg.payload]\t   ],\t   ['name']\t]",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 440,
+        "y": 80,
+        "wires": [
+            [
+                "92b8c33e76b58adf"
+            ]
+        ]
+    },
+    {
+        "id": "92b8c33e76b58adf",
+        "type": "odoo-xmlrpc-search-read",
+        "z": "d30b16ca0e9bbdce",
+        "name": "search read res.partner",
+        "host": "eff09f3d6f4be3f8",
+        "model": "res.partner",
+        "filter": "",
+        "offset": 0,
+        "limit": 100,
+        "x": 730,
+        "y": 80,
+        "wires": [
+            [
+                "1d9e3f9ac7e008f1"
+            ]
+        ]
+    },
+    {
+        "id": "d8b443b005e7f93f",
+        "type": "odoo-xmlrpc-update",
+        "z": "d30b16ca0e9bbdce",
+        "name": "",
+        "host": "eff09f3d6f4be3f8",
+        "model": "",
+        "filter": "",
+        "offset": 0,
+        "limit": 100,
+        "x": 650,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0a2d9090a0b374e5",
+        "type": "ui_group",
+        "name": "buttons",
+        "tab": "b6d7b330d223bf07",
+        "order": 2,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "26169ec9908443d7",
+        "type": "ui_group",
+        "name": "etable",
+        "tab": "b6d7b330d223bf07",
+        "order": 3,
+        "disp": true,
+        "width": 20,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "eff09f3d6f4be3f8",
+        "type": "odoo-xmlrpc-config",
+        "url": "http://edu-heclausanne-terre.odoo.com/xmlrpc/2/common",
+        "db": "edu-heclausanne-terre",
+        "username": "EstelleValerie.TsagueMbialeu@unil.ch",
+        "password": "Etoile"
+    },
+    {
+        "id": "b6d7b330d223bf07",
+        "type": "ui_tab",
+        "name": "TG2Devis",
+        "icon": "description",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    }
+]
